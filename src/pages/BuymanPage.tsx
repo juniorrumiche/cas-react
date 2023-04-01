@@ -1,5 +1,4 @@
 import {
-  Box,
   Flex,
   IconButton,
   Input,
@@ -8,12 +7,15 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { MdRefresh, MdSearch } from "react-icons/md";
+import { MdPlusOne, MdRefresh, MdSearch } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { Base } from "../components/base/Base";
 import { CardBuyman } from "../components/buyman/CardBuyman";
 import { setBuymans } from "../redux/slices/buyman/slices";
 import { RootState } from "../redux/store";
+//external module
+import PullToRefresh from "react-simple-pull-to-refresh";
+import { sleep } from "../api/buyman";
 
 export const BuymanPage = () => {
   //staes
@@ -45,28 +47,32 @@ export const BuymanPage = () => {
           <InputLeftElement children={<MdSearch />} />
           <Input type="text" />
         </InputGroup>
-        <IconButton
-          onClick={() => setRefresh(refresh + 1)}
-          icon={<MdRefresh />}
-          aria-label="..."
-        />
       </Flex>
-      <Flex
-        gap={10}
-        p={5}
-        justifyContent={{
-          base: "center",
-          sm: "center",
-          md: "center",
-          lg: 'center',
+      <PullToRefresh
+        onRefresh={async () => {
+          await sleep(2000);
+          setRefresh(refresh + 1);
         }}
-        wrap="wrap"
       >
-        {state.buyman &&
-          state.buyman.map((buyman, index) => (
-            <CardBuyman {...buyman} key={index} />
-          ))}
-      </Flex>
+        <Flex
+          transition="all"
+          transitionDuration="1s"
+          gap={10}
+          p={5}
+          justifyContent={{
+            base: "center",
+            sm: "center",
+            md: "center",
+            lg: "center",
+          }}
+          wrap="wrap"
+        >
+          {state.buyman &&
+            state.buyman.map((buyman, index) => (
+              <CardBuyman {...buyman} key={index} />
+            ))}
+        </Flex>
+      </PullToRefresh>
     </Base>
   );
 };
