@@ -14,5 +14,5 @@ export interface BuymanProps {
 }
 
 export interface BuymanState {
-  buyman?: BuymanProps;
+  buyman?: Array<BuymanProps>;
 }
