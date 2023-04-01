@@ -1,13 +1,7 @@
-import {
-  Flex,
-  IconButton,
-  Input,
-  InputGroup,
-  InputLeftElement,
-} from "@chakra-ui/react";
+import { Flex, Input, InputGroup, InputLeftElement } from "@chakra-ui/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { MdPlusOne, MdRefresh, MdSearch } from "react-icons/md";
+import { MdSearch } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { Base } from "../components/base/Base";
 import { CardBuyman } from "../components/buyman/CardBuyman";
@@ -42,8 +36,14 @@ export const BuymanPage = () => {
   //return
   return (
     <Base>
-      <Flex p={5} justifyContent="flex-end" gap={5} alignItems="center">
-        <InputGroup w={{ base: "20%" }}>
+      <Flex
+        py={5}
+        px={10}
+        justifyContent="flex-end"
+        gap={5}
+        alignItems="center"
+      >
+        <InputGroup w={{ base: "40%", md: "30%", lg: "20%" }}>
           <InputLeftElement children={<MdSearch />} />
           <Input type="text" />
         </InputGroup>
