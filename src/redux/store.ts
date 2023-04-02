@@ -1,10 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import buymanSlice from "./slices/buyman/slices";
+import refreshSlice from "./slices/global/slices";
 
 //store
 export const store = configureStore({
   reducer: {
     buymanSlice,
+    refreshSlice,
   },
 });
 

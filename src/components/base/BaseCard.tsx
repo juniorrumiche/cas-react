@@ -24,7 +24,9 @@ export const BaseCard = ({ children }: BaseProps) => {
         <Flex justify={"center"} mt={-12}>
           <Avatar
             size={"xl"}
-            src={"https://images.unsplash.com/photo-1500648767791-00dcc994a43e"}
+            src={
+              "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
+            }
             css={{
               border: "2px solid white",
             }}

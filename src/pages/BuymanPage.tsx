@@ -1,6 +1,6 @@
 import { Flex, Input, InputGroup, InputLeftElement } from "@chakra-ui/react";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { MdSearch } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { Base } from "../components/base/Base";
@@ -10,18 +10,18 @@ import { RootState } from "../redux/store";
 //external module
 import PullToRefresh from "react-simple-pull-to-refresh";
 import { sleep } from "../api/buyman";
+import { refreshing } from "../redux/slices/global/slices";
 
 export const BuymanPage = () => {
   //staes
-  const [refresh, setRefresh] = useState(1);
   // redux state
   const state = useSelector((state: RootState) => state.buymanSlice);
+  const { refresh } = useSelector((state: RootState) => state.refreshSlice);
   const dispatch = useDispatch();
 
   //useeffetc
   useEffect(() => {
     const timeout = setTimeout(async () => {
-      console.log("ejecutando");
       try {
         let response = await axios.get("/api/buyman");
         dispatch(setBuymans(response.data));
@@ -51,12 +51,10 @@ export const BuymanPage = () => {
       <PullToRefresh
         onRefresh={async () => {
           await sleep(2000);
-          setRefresh(refresh + 1);
+          dispatch(refreshing(Math.random()));
         }}
       >
         <Flex
-          transition="all"
-          transitionDuration="1s"
           gap={10}
           p={5}
           justifyContent={{
@@ -69,7 +67,7 @@ export const BuymanPage = () => {
         >
           {state.buyman &&
             state.buyman.map((buyman, index) => (
-              <CardBuyman {...buyman} key={index} />
+              <CardBuyman buyman={buyman} key={index} />
             ))}
         </Flex>
       </PullToRefresh>
