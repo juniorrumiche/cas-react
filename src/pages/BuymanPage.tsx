@@ -9,7 +9,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { MdPlusOne, MdSearch } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { Base } from "../components/base/Base";
@@ -21,6 +21,7 @@ import PullToRefresh from "react-simple-pull-to-refresh";
 import { sleep } from "../api/buyman";
 import { refreshing } from "../redux/slices/global/slices";
 import { DialogAddBuyman } from "../components/buyman/DialogAddBuyman";
+import { BuymanProps } from "../types/buyman.t";
 
 export const BuymanPage = () => {
   //staes
@@ -31,15 +32,26 @@ export const BuymanPage = () => {
     onClose: closeAdd,
   } = useDisclosure();
   const state = useSelector((state: RootState) => state.buymanSlice);
+  const [dataFilter, setDataFilter] = useState<Array<BuymanProps>>();
   const { refresh } = useSelector((state: RootState) => state.refreshSlice);
   const dispatch = useDispatch();
+
+  const filterData = (query: string) => {
+    let filter: Array<BuymanProps> | undefined = state.buyman?.filter((data) =>
+      `${data.name_comprador?.toLowerCase()} ${data.dni_comprador}`.includes(query.toLowerCase())
+    );
+
+    setDataFilter(filter);
+  };
 
   //useeffetc
   useEffect(() => {
     const timeout = setTimeout(async () => {
+      console.log("refreshing");
       try {
         let response = await axios.get("/api/buyman");
         dispatch(setBuymans(response.data));
+        setDataFilter(response.data);
       } catch (error) {
         console.log(error);
       }
@@ -65,7 +77,7 @@ export const BuymanPage = () => {
           </Button>
           <InputGroup w={{ base: "40%", md: "30%", lg: "20%" }}>
             <InputLeftElement children={<MdSearch />} />
-            <Input type="text" />
+            <Input onChange={(e) => filterData(e.target.value)} type="text" />
           </InputGroup>
         </Flex>
       </Box>
@@ -88,8 +100,8 @@ export const BuymanPage = () => {
           }}
           wrap="wrap"
         >
-          {state.buyman &&
-            state.buyman.map((buyman, index) => (
+          {dataFilter &&
+            dataFilter.map((buyman, index) => (
               <CardBuyman buyman={buyman} key={index} />
             ))}
         </Flex>

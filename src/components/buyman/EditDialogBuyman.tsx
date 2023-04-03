@@ -20,17 +20,21 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { MdCardTravel, MdEmail, MdMoney, MdPerson2 } from "react-icons/md";
+import { MdCardTravel, MdEmail, MdMoney } from "react-icons/md";
 import { useDispatch } from "react-redux";
-import { getNameByDNI, sleep } from "../../api/buyman";
+import { sleep } from "../../api/buyman";
 import { refreshing } from "../../redux/slices/global/slices";
 import { BuymanProps } from "../../types/buyman.t";
 
-import { BaseDialogProps } from "../../types/componets.t";
+import { EditDialogBuymanProps } from "../../types/componets.t";
 
-export const DialogAddBuyman = ({ onClose, isOpen }: BaseDialogProps) => {
+export const EditDialogBuyman = ({
+  onClose,
+  isOpen,
+  buyman,
+}: EditDialogBuymanProps) => {
   //states
-  const [formData, setFormData] = useState<BuymanProps>({});
+  const [formData, setFormData] = useState<BuymanProps>(buyman);
   const [loading, setloading] = useState(false);
   const toast = useToast();
   const dispatch = useDispatch();
@@ -38,7 +42,6 @@ export const DialogAddBuyman = ({ onClose, isOpen }: BaseDialogProps) => {
   //refs
   const initialRef = useRef(null);
   const finalRef = useRef(null);
-  const nameRef = useRef<HTMLInputElement>(null);
 
   // functions
 
@@ -46,23 +49,9 @@ export const DialogAddBuyman = ({ onClose, isOpen }: BaseDialogProps) => {
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     let target = e.target;
-    console.log(formData)
-
-    // change the value when the ID is complete
-    if (target.name == "dni_comprador") {
-      if (target.value.length == 8) {
-        let name = await getNameByDNI(target.value);
-        nameRef.current?.setAttribute("value", name);
-      } else {
-        nameRef.current?.setAttribute("value", "");
-      }
-    }
-
-    //defines the value of the inputs
     setFormData({
       ...formData,
       [target.name]: target.value,
-      name_comprador: nameRef.current?.value,
     });
   };
 
@@ -76,7 +65,10 @@ export const DialogAddBuyman = ({ onClose, isOpen }: BaseDialogProps) => {
     const form = new FormData();
     Object.entries(formData).forEach(([key, value]) => form.append(key, value));
     try {
-      let response = await axios.post("/api/buyman/add", form);
+      let response = await axios.post(
+        `/api/buyman/edit/${buyman.cod_comprador}`,
+        form
+      );
       if (response.status == 201) {
         onClose();
         dispatch(refreshing(Math.random()));
@@ -89,7 +81,6 @@ export const DialogAddBuyman = ({ onClose, isOpen }: BaseDialogProps) => {
           status: "error",
           title: "error",
           description: data.error,
-          duration: 1500,
         });
       }
     }
@@ -98,8 +89,9 @@ export const DialogAddBuyman = ({ onClose, isOpen }: BaseDialogProps) => {
 
   // clears the form when the form is closed
   useEffect(() => {
+    setFormData(buyman);
     return () => {
-      setFormData({});
+      // setFormData({});
     };
   }, [isOpen]);
 
@@ -124,61 +116,19 @@ export const DialogAddBuyman = ({ onClose, isOpen }: BaseDialogProps) => {
           <ModalHeader>Agregar Comprador </ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
-            <FormControl isReadOnly isRequired>
-              <FormLabel>Nombre</FormLabel>
+            <FormControl mt={4} isRequired>
+              <FormLabel>Correo</FormLabel>
               <InputGroup>
-                <InputLeftElement children={<MdPerson2 />} />
+                <InputLeftElement children={<MdEmail />} />
                 <Input
-                  isInvalid={nameRef.current?.value.length ? false : true}
-                  name="name_comprador"
-                  ref={nameRef}
+                  value={formData.email_comprador}
                   variant={useColorModeValue("outline", "filled")}
-                  placeholder="Nombres "
+                  name="email_comprador"
+                  onChange={(e) => handleForm(e)}
+                  type="telf"
+                  placeholder="Corero Electronico"
                 />
               </InputGroup>
-            </FormControl>
-
-            <HStack mt={4} spacing={3}>
-              <FormControl isRequired>
-                <FormLabel>DNI</FormLabel>
-                <InputGroup>
-                  <InputLeftElement children={<MdCardTravel />} />
-                  <Input
-                    variant={useColorModeValue("outline", "filled")}
-                    name="dni_comprador"
-                    onChange={async (e) => await handleForm(e)}
-                    ref={initialRef}
-                    maxLength={8}
-                    type="telf"
-                    placeholder="DNI"
-                  />
-                </InputGroup>
-              </FormControl>
-
-              <FormControl mt={4} isRequired>
-                <FormLabel>Telefono</FormLabel>
-                <InputGroup>
-                  <InputLeftElement children={<MdCardTravel />} />
-                  <Input
-                    variant={useColorModeValue("outline", "filled")}
-                    name="telf_comprador"
-                    onChange={(e) => handleForm(e)}
-                    maxLength={9}
-                    type="telf"
-                    placeholder="Telefono"
-                  />
-                </InputGroup>
-              </FormControl>
-            </HStack>
-
-            <FormControl mt={4} isRequired>
-              <FormLabel>Historial Cliente</FormLabel>
-              <Textarea
-                variant={useColorModeValue("outline", "filled")}
-                name="history"
-                onChange={(e) => handleForm(e)}
-                rows={5}
-              ></Textarea>
             </FormControl>
 
             <HStack mt={4} spacing={3}>
@@ -187,6 +137,7 @@ export const DialogAddBuyman = ({ onClose, isOpen }: BaseDialogProps) => {
                 <InputGroup>
                   <InputLeftElement children={<MdMoney />} />
                   <Input
+                    value={formData.importOriginal}
                     variant={useColorModeValue("outline", "filled")}
                     name="importOriginal"
                     onChange={(e) => handleForm(e)}
@@ -201,6 +152,7 @@ export const DialogAddBuyman = ({ onClose, isOpen }: BaseDialogProps) => {
                 <InputGroup>
                   <InputLeftElement children={<MdMoney />} />
                   <Input
+                    value={formData.IngreBruto}
                     variant={useColorModeValue("outline", "filled")}
                     name="IngreBruto"
                     onChange={(e) => handleForm(e)}
@@ -212,25 +164,39 @@ export const DialogAddBuyman = ({ onClose, isOpen }: BaseDialogProps) => {
             </HStack>
 
             <FormControl mt={4} isRequired>
-              <FormLabel>Correo</FormLabel>
-              <InputGroup>
-                <InputLeftElement children={<MdEmail />} />
-                <Input
-                  variant={useColorModeValue("outline", "filled")}
-                  name="email_comprador"
-                  onChange={(e) => handleForm(e)}
-                  type="telf"
-                  placeholder="Corero Electronico"
-                />
-              </InputGroup>
+              <FormLabel>Historial Cliente</FormLabel>
+              <Textarea
+                value={formData.history}
+                variant={useColorModeValue("outline", "filled")}
+                name="history"
+                onChange={(e) => handleForm(e)}
+                rows={5}
+              ></Textarea>
             </FormControl>
 
             <HStack mt={4} spacing={3}>
+              <FormControl isRequired>
+                <FormLabel>Telefono</FormLabel>
+                <InputGroup>
+                  <InputLeftElement children={<MdCardTravel />} />
+                  <Input
+                    value={formData.telf_comprador}
+                    variant={useColorModeValue("outline", "filled")}
+                    name="telf_comprador"
+                    onChange={(e) => handleForm(e)}
+                    maxLength={9}
+                    type="telf"
+                    placeholder="Telefono"
+                  />
+                </InputGroup>
+              </FormControl>
+
               <FormControl isRequired>
                 <FormLabel>Cumpleaños</FormLabel>
                 <InputGroup>
                   <InputLeftElement children={<MdMoney />} />
                   <Input
+                    value={formData.birthdate_comprador}
                     variant={useColorModeValue("outline", "filled")}
                     name="birthdate_comprador"
                     onChange={(e) => handleForm(e)}
@@ -238,29 +204,18 @@ export const DialogAddBuyman = ({ onClose, isOpen }: BaseDialogProps) => {
                   />
                 </InputGroup>
               </FormControl>
-
-              <FormControl mt={4} isRequired>
-                <FormLabel>Modalidad Contrato</FormLabel>
-                <Select variant={useColorModeValue("outline", "filled")}>
-                  <option>Seleccione Modalida</option>
-                  <option>CAS</option>
-                  <option>Part Time</option>
-                  <option>Tiempo Indefinido </option>
-                  <option>Nombrado</option>
-                  <option>RPH</option>
-                </Select>
-              </FormControl>
             </HStack>
 
             <FormControl mt={4} isRequired>
               <FormLabel>Banco</FormLabel>
               <Select
-                name="cod_banco"
+                value={formData.cod_banco}
                 onChange={(e) => handleForm(e)}
+                name="cod_banco"
                 variant={useColorModeValue("outline", "filled")}
               >
-                <option>seleccione</option>
-                <option value={1}>BBVA</option>
+                <option> seleccionar..</option>
+                <option value="3"> No se</option>
               </Select>
             </FormControl>
           </ModalBody>
@@ -268,6 +223,7 @@ export const DialogAddBuyman = ({ onClose, isOpen }: BaseDialogProps) => {
           <ModalFooter>
             <Button
               isLoading={loading}
+              loadingText="actualizando"
               onClick={() => sendForm()}
               colorScheme="teal"
               mr={3}

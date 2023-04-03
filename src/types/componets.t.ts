@@ -17,6 +17,10 @@ export interface CardBuymanProps {
   buyman: BuymanProps;
 }
 
-export interface DetailsDialogBuymanProps extends DeleteDialgoBuymanProps {
+export interface DetailsDialogBuymanProps extends BaseDialogProps {
+  buyman: BuymanProps;
+}
+
+export interface EditDialogBuymanProps extends BaseDialogProps {
   buyman: BuymanProps;
 }

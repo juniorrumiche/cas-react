@@ -13,20 +13,31 @@ import { CardBuymanProps } from "../../types/componets.t";
 import { BaseCard } from "../base/BaseCard";
 import { DeleteDialogBuyman } from "./DeleteDialogBuyman";
 import { DetailDialogBuyman } from "./DetailsDialogBuyman";
+import { EditDialogBuyman } from "./EditDialogBuyman";
 
 //component
 export const CardBuyman = (props: CardBuymanProps) => {
+    console.log('renderizando')
   // para los modales
+  // //for delete
   const {
     isOpen: isOpenDelete,
     onOpen: openDelete,
     onClose: closeDelete,
   } = useDisclosure();
 
+  //for details
   const {
     isOpen: isOpenDetails,
     onOpen: openDetails,
     onClose: closeDetails,
+  } = useDisclosure();
+
+  // for edit
+  const {
+    isOpen: isOpenEdit,
+    onOpen: openEdit,
+    onClose: closeEdit,
   } = useDisclosure();
 
   // para los modales
@@ -74,7 +85,9 @@ export const CardBuyman = (props: CardBuymanProps) => {
             aria-label="..."
             icon={<MdDelete />}
           />
-          <IconButton rounded="3xl" aria-label="..." icon={<MdEdit />} />
+          <IconButton
+          onClick={openEdit}
+          rounded="3xl" aria-label="..." icon={<MdEdit />} />
         </Flex>
         <DeleteDialogBuyman
           {...props.buyman}
@@ -87,6 +100,7 @@ export const CardBuyman = (props: CardBuymanProps) => {
           onClose={closeDetails}
           buyman={props.buyman}
         />
+        <EditDialogBuyman onClose={closeEdit} isOpen={isOpenEdit} buyman={props.buyman} />
       </Box>
     </BaseCard>
   );
