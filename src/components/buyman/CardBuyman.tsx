@@ -17,9 +17,9 @@ import { DeleteDialogBuyman } from "./DeleteDialogBuyman";
 export const CardBuyman = (props: CardBuymanProps) => {
   // para los modales
   const {
-    isOpen: isOpenEdit,
-    onOpen: openEdit,
-    onClose: closeEdit,
+    isOpen: isOpenDelete,
+    onOpen: openDelete,
+    onClose: closeDelete,
   } = useDisclosure();
 
   // para los modales
@@ -61,7 +61,7 @@ export const CardBuyman = (props: CardBuymanProps) => {
             icon={<MdRemoveRedEye />}
           />
           <IconButton
-            onClick={openEdit}
+            onClick={openDelete}
             rounded="3xl"
             aria-label="..."
             icon={<MdDelete />}
@@ -70,8 +70,8 @@ export const CardBuyman = (props: CardBuymanProps) => {
         </Flex>
         <DeleteDialogBuyman
           {...props.buyman}
-          isOpen={isOpenEdit}
-          onClose={closeEdit}
+          isOpen={isOpenDelete}
+          onClose={closeDelete}
         />
       </Box>
     </BaseCard>
