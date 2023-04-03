@@ -20,13 +20,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
-import {
-  MdCardTravel,
-  MdEmail,
-  MdMergeType,
-  MdMoney,
-  MdPerson2,
-} from "react-icons/md";
+import { MdCardTravel, MdEmail, MdMoney, MdPerson2 } from "react-icons/md";
 import { useDispatch } from "react-redux";
 import { getNameByDNI, sleep } from "../../api/buyman";
 import { refreshing } from "../../redux/slices/global/slices";
@@ -119,7 +113,12 @@ export const DialogAddBuyman = ({ onClose, isOpen }: BaseDialogProps) => {
         size="lg"
       >
         <ModalOverlay />
-        <ModalContent color={useColorModeValue("gray.500", "whiteAlpha.800")}>
+        <ModalContent
+          borderRadius={5}
+          boxShadow={"2xl"}
+          bg={useColorModeValue("white", "gray.900")}
+          color={useColorModeValue("gray.500", "whiteAlpha.800")}
+        >
           <ModalHeader>Agregar Comprador </ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
@@ -240,14 +239,14 @@ export const DialogAddBuyman = ({ onClose, isOpen }: BaseDialogProps) => {
 
               <FormControl mt={4} isRequired>
                 <FormLabel>Modalidad Contrato</FormLabel>
-                <InputGroup>
-                  <InputLeftElement children={<MdMergeType />} />
-                  <Input
-                    variant={useColorModeValue("outline", "filled")}
-                    type="text"
-                    placeholder="Modalidad"
-                  />
-                </InputGroup>
+                <Select variant={useColorModeValue("outline", "filled")}>
+                  <option>Seleccione Modalida</option>
+                  <option>CAS</option>
+                  <option>Part Time</option>
+                  <option>Tiempo Indefinido </option>
+                  <option>Nombrado</option>
+                  <option>RPH</option>
+                </Select>
               </FormControl>
             </HStack>
 

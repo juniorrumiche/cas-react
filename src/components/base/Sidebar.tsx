@@ -60,7 +60,10 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   return (
     <>
       <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
-        <DrawerContent>
+        <DrawerContent
+          boxShadow="lg"
+          bg={useColorModeValue("white", "gray.900")}
+        >
           <DrawerCloseButton />
           <DrawerHeader borderBottomWidth="1px">
             <Center>

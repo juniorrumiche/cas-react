@@ -17,4 +17,6 @@ export interface CardBuymanProps {
   buyman: BuymanProps;
 }
 
-// const CardProps
+export interface DetailsDialogBuymanProps extends DeleteDialgoBuymanProps {
+  buyman: BuymanProps;
+}

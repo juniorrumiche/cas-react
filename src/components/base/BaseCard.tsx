@@ -8,7 +8,7 @@ export const BaseCard = ({ children }: BaseProps) => {
         my={3}
         maxW={"270px"}
         w={"full"}
-        bg={useColorModeValue("white", "whiteAlpha.100")}
+        bg={useColorModeValue("white", "gray.900")}
         boxShadow={"2xl"}
         rounded={"md"}
         overflow={"hidden"}

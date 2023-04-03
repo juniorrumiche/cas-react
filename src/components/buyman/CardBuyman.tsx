@@ -12,6 +12,7 @@ import { MdDelete, MdEdit, MdRemoveRedEye } from "react-icons/md";
 import { CardBuymanProps } from "../../types/componets.t";
 import { BaseCard } from "../base/BaseCard";
 import { DeleteDialogBuyman } from "./DeleteDialogBuyman";
+import { DetailDialogBuyman } from "./DetailsDialogBuyman";
 
 //component
 export const CardBuyman = (props: CardBuymanProps) => {
@@ -20,6 +21,12 @@ export const CardBuyman = (props: CardBuymanProps) => {
     isOpen: isOpenDelete,
     onOpen: openDelete,
     onClose: closeDelete,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenDetails,
+    onOpen: openDetails,
+    onClose: closeDetails,
   } = useDisclosure();
 
   // para los modales
@@ -56,6 +63,7 @@ export const CardBuyman = (props: CardBuymanProps) => {
 
         <Flex justifyContent="center" gap={3} p={3}>
           <IconButton
+            onClick={openDetails}
             rounded="3xl"
             aria-label="..."
             icon={<MdRemoveRedEye />}
@@ -72,6 +80,12 @@ export const CardBuyman = (props: CardBuymanProps) => {
           {...props.buyman}
           isOpen={isOpenDelete}
           onClose={closeDelete}
+        />
+
+        <DetailDialogBuyman
+          isOpen={isOpenDetails}
+          onClose={closeDetails}
+          buyman={props.buyman}
         />
       </Box>
     </BaseCard>
