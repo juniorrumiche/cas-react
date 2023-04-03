@@ -16,11 +16,19 @@ import {
   useColorModeValue,
   Textarea,
   Select,
+  useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { ChangeEvent, useRef, useState } from "react";
-import { MdCardTravel, MdEmail, MdMoney, MdPerson2 } from "react-icons/md";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
+import {
+  MdCardTravel,
+  MdEmail,
+  MdMergeType,
+  MdMoney,
+  MdPerson2,
+} from "react-icons/md";
 import { useDispatch } from "react-redux";
+import { getNameByDNI, sleep } from "../../api/buyman";
 import { refreshing } from "../../redux/slices/global/slices";
 import { BuymanProps } from "../../types/buyman.t";
 
@@ -29,43 +37,75 @@ import { BaseDialogProps } from "../../types/componets.t";
 export const DialogAddBuyman = ({ onClose, isOpen }: BaseDialogProps) => {
   //states
   const [formData, setFormData] = useState<BuymanProps>({});
+  const [loading, setloading] = useState(false);
+  const toast = useToast();
   const dispatch = useDispatch();
 
   //refs
   const initialRef = useRef(null);
   const finalRef = useRef(null);
+  const nameRef = useRef<HTMLInputElement>(null);
 
   // functions
 
-  const handleForm = (
+  const handleForm = async (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
+    let target = e.target;
+
+    // change the value when the ID is complete
+    if (target.name == "dni_comprador") {
+      if (target.value.length == 8) {
+        let name = await getNameByDNI(target.value);
+        nameRef.current?.setAttribute("value", name);
+      } else {
+        nameRef.current?.setAttribute("value", "");
+      }
+    }
+
+    //defines the value of the inputs
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [target.name]: target.value,
+      name_comprador: nameRef.current?.value,
     });
   };
 
+  //get dni
+  //envia el formulario
   const sendForm = async () => {
+    setloading(true);
+    await sleep(2000);
+
+    //converts the object to a form data
     const form = new FormData();
     Object.entries(formData).forEach(([key, value]) => form.append(key, value));
     try {
-      let response = await axios({
-        url: "/api/buyman/add",
-        method: "POST",
-        data: form,
-      });
-
+      let response = await axios.post("/api/buyman/add", form);
       if (response.status == 201) {
         onClose();
         dispatch(refreshing(Math.random()));
       }
-
-      console.log(response.data);
     } catch (error) {
-      console.log(error);
+      if (axios.isAxiosError(error)) {
+        let data = error.response?.data;
+        toast({
+          position: "bottom-right",
+          status: "error",
+          title: "error",
+          description: data.error,
+        });
+      }
     }
+    setloading(false);
   };
+
+  // clears the form when the form is closed
+  useEffect(() => {
+    return () => {
+      setFormData({});
+    };
+  }, [isOpen]);
 
   //return jsx
   return (
@@ -83,15 +123,15 @@ export const DialogAddBuyman = ({ onClose, isOpen }: BaseDialogProps) => {
           <ModalHeader>Agregar Comprador </ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
-            <FormControl isRequired>
+            <FormControl isReadOnly isRequired>
               <FormLabel>Nombre</FormLabel>
               <InputGroup>
                 <InputLeftElement children={<MdPerson2 />} />
                 <Input
-                  onChange={(e) => handleForm(e)}
+                  isInvalid={nameRef.current?.value.length ? false : true}
                   name="name_comprador"
+                  ref={nameRef}
                   variant={useColorModeValue("outline", "filled")}
-                  // value="hola mundo"
                   placeholder="Nombres "
                 />
               </InputGroup>
@@ -105,9 +145,9 @@ export const DialogAddBuyman = ({ onClose, isOpen }: BaseDialogProps) => {
                   <Input
                     variant={useColorModeValue("outline", "filled")}
                     name="dni_comprador"
-                    onChange={(e) => handleForm(e)}
+                    onChange={async (e) => await handleForm(e)}
                     ref={initialRef}
-                    maxLength={9}
+                    maxLength={8}
                     type="telf"
                     placeholder="DNI"
                   />
@@ -179,7 +219,7 @@ export const DialogAddBuyman = ({ onClose, isOpen }: BaseDialogProps) => {
                   name="email_comprador"
                   onChange={(e) => handleForm(e)}
                   type="telf"
-                  placeholder="Importe Bruto"
+                  placeholder="Corero Electronico"
                 />
               </InputGroup>
             </FormControl>
@@ -201,7 +241,7 @@ export const DialogAddBuyman = ({ onClose, isOpen }: BaseDialogProps) => {
               <FormControl mt={4} isRequired>
                 <FormLabel>Modalidad Contrato</FormLabel>
                 <InputGroup>
-                  <InputLeftElement children={<MdMoney />} />
+                  <InputLeftElement children={<MdMergeType />} />
                   <Input
                     variant={useColorModeValue("outline", "filled")}
                     type="text"
@@ -214,13 +254,18 @@ export const DialogAddBuyman = ({ onClose, isOpen }: BaseDialogProps) => {
             <FormControl mt={4} isRequired>
               <FormLabel>Banco</FormLabel>
               <Select variant={useColorModeValue("outline", "filled")}>
-                <option value="1">...</option>
+                <option></option>
               </Select>
             </FormControl>
           </ModalBody>
 
           <ModalFooter>
-            <Button onClick={() => sendForm()} colorScheme="blue" mr={3}>
+            <Button
+              isLoading={loading}
+              onClick={() => sendForm()}
+              colorScheme="teal"
+              mr={3}
+            >
               Guarar
             </Button>
             <Button onClick={onClose}>Cancelar</Button>
