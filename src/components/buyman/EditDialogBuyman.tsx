@@ -21,9 +21,10 @@ import {
 import axios from "axios";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { MdCardTravel, MdEmail, MdMoney } from "react-icons/md";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { sleep } from "../../api/buyman";
 import { refreshing } from "../../redux/slices/global/slices";
+import { RootState } from "../../redux/store";
 import { BuymanProps } from "../../types/buyman.t";
 
 import { EditDialogBuymanProps } from "../../types/componets.t";
@@ -38,6 +39,8 @@ export const EditDialogBuyman = ({
   const [loading, setloading] = useState(false);
   const toast = useToast();
   const dispatch = useDispatch();
+
+  const state = useSelector((state: RootState) => state.BankSlice);
 
   //refs
   const initialRef = useRef(null);
@@ -214,8 +217,12 @@ export const EditDialogBuyman = ({
                 name="cod_banco"
                 variant={useColorModeValue("outline", "filled")}
               >
-                <option> seleccionar..</option>
-                <option value="3"> No se</option>
+                <option>Seleccione..</option>
+                {state.bank?.map((bank, index) => (
+                  <option key={index} value={bank.cod_banco}>
+                    {bank.name_banco}
+                  </option>
+                ))}
               </Select>
             </FormControl>
           </ModalBody>

@@ -21,15 +21,19 @@ import {
 import axios from "axios";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { MdCardTravel, MdEmail, MdMoney, MdPerson2 } from "react-icons/md";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getNameByDNI, sleep } from "../../api/buyman";
 import { refreshing } from "../../redux/slices/global/slices";
 import { BuymanProps } from "../../types/buyman.t";
 import { memo } from "react";
 import { BaseDialogProps } from "../../types/componets.t";
+import { RootState } from "../../redux/store";
 
 export const DialogAddBuyman = memo(({ onClose, isOpen }: BaseDialogProps) => {
   //states
+  //
+  const state = useSelector((state: RootState) => state.BankSlice);
+
   const [formData, setFormData] = useState<BuymanProps>({});
   const [loading, setloading] = useState(false);
   const toast = useToast();
@@ -258,8 +262,12 @@ export const DialogAddBuyman = memo(({ onClose, isOpen }: BaseDialogProps) => {
                 onChange={(e) => handleForm(e)}
                 variant={useColorModeValue("outline", "filled")}
               >
-                <option>seleccione</option>
-                <option value={1}>BBVA</option>
+                <option>Seleccione..</option>
+                {state.bank?.map((bank, index) => (
+                  <option key={index} value={bank.cod_banco}>
+                    {bank.name_banco}
+                  </option>
+                ))}
               </Select>
             </FormControl>
           </ModalBody>

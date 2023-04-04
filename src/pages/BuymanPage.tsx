@@ -22,6 +22,7 @@ import { sleep } from "../api/buyman";
 import { refreshing } from "../redux/slices/global/slices";
 import { DialogAddBuyman } from "../components/buyman/DialogAddBuyman";
 import { BuymanProps } from "../types/buyman.t";
+import { setBanks } from "../redux/slices/bank/slices";
 export const BuymanPage = () => {
   //staes
   // redux state
@@ -30,10 +31,13 @@ export const BuymanPage = () => {
     onOpen: openAdd,
     onClose: closeAdd,
   } = useDisclosure();
+  //redux states
   const state = useSelector((state: RootState) => state.buymanSlice);
+  const dispatch = useDispatch();
+
+  //stated
   const [dataFilter, setDataFilter] = useState<Array<BuymanProps>>();
   const { refresh } = useSelector((state: RootState) => state.refreshSlice);
-  const dispatch = useDispatch();
 
   const filterData = useCallback(
     (query: string) => {
@@ -53,9 +57,12 @@ export const BuymanPage = () => {
   useEffect(() => {
     const timeout = setTimeout(async () => {
       try {
-        let response = await axios.get("/api/buyman");
-        dispatch(setBuymans(response.data));
-        setDataFilter(response.data);
+        let respBuyman = await axios.get("/api/buyman");
+        dispatch(setBuymans(respBuyman.data));
+        setDataFilter(respBuyman.data);
+
+        let respBank = await axios.get("/api/bank");
+        dispatch(setBanks(respBank.data));
       } catch (error) {}
     }, 100);
 

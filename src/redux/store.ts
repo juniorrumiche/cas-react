@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import buymanSlice from "./slices/buyman/slices";
 import refreshSlice from "./slices/global/slices";
+import BankSlice from "./slices/bank/slices";
 
 //store
 export const store = configureStore({
   reducer: {
     buymanSlice,
+    BankSlice,
     refreshSlice,
   },
 });
