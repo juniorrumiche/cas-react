@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Flex,
+  IconButton,
   Input,
   InputGroup,
   InputLeftElement,
@@ -10,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
-import { MdPlusOne, MdSearch } from "react-icons/md";
+import { MdArrowLeft, MdArrowRight, MdPlusOne, MdSearch } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { Base } from "../components/base/Base";
 import { CardBuyman } from "../components/buyman/CardBuyman";
@@ -39,8 +40,32 @@ export const BuymanPage = () => {
   const [dataFilter, setDataFilter] = useState<Array<BuymanProps>>();
   const { refresh } = useSelector((state: RootState) => state.refreshSlice);
 
+  /*
+   * ================================================================
+   */
+  const itemPerPage = 12;
+  const [offsetPageStart, setOffsetPageStart] = useState(0);
+  const [offsetPageEnd, setOffsetPageEnd] = useState(itemPerPage);
+
+  /*
+   * ================================================================
+   */
+
+  const paginationPrev = () => {
+    setOffsetPageStart(offsetPageStart - itemPerPage);
+    setOffsetPageEnd(offsetPageEnd - itemPerPage);
+  };
+
+  const paginationNext = () => {
+    setOffsetPageStart(offsetPageStart + itemPerPage);
+    setOffsetPageEnd(offsetPageEnd + itemPerPage);
+  };
+
+  //
   const filterData = useCallback(
     (query: string) => {
+      setOffsetPageStart(0);
+      setOffsetPageEnd(itemPerPage);
       let filter: Array<BuymanProps> | undefined = state.buyman?.filter(
         (data) =>
           `${data.name_comprador?.toLowerCase()} ${
@@ -53,7 +78,9 @@ export const BuymanPage = () => {
     [state.buyman]
   );
 
-  //useeffetc
+  /*
+   * ================================================================
+   */
   useEffect(() => {
     const timeout = setTimeout(async () => {
       try {
@@ -68,8 +95,9 @@ export const BuymanPage = () => {
 
     return () => clearTimeout(timeout);
   }, [refresh]);
-  //
-  //return
+  /*
+   * ================================================================
+   */
   return (
     <Base>
       <Box p={5}>
@@ -110,11 +138,34 @@ export const BuymanPage = () => {
           wrap="wrap"
         >
           {dataFilter &&
-            dataFilter.map((buyman, index) => (
-              <CardBuyman buyman={buyman} key={index} />
-            ))}
+            dataFilter
+              .slice(offsetPageStart, offsetPageEnd)
+              .map((buyman, index) => (
+                <CardBuyman buyman={buyman} key={index} />
+              ))}
         </Flex>
       </PullToRefresh>
+      {offsetPageStart <= 0 ? null : (
+        <IconButton
+          onClick={paginationPrev}
+          position="fixed"
+          top="48%"
+          left={5}
+          icon={<MdArrowLeft size={35} />}
+          aria-label="..."
+        />
+      )}
+      {offsetPageEnd >= (dataFilter?.length || 0) ? null : (
+        <IconButton
+          position="fixed"
+          onClick={paginationNext}
+          top="48%"
+          right={5}
+          icon={<MdArrowRight size={30} />}
+          aria-label="..."
+        />
+      )}
+
       <DialogAddBuyman isOpen={isOpenAdd} onClose={closeAdd} />
     </Base>
   );

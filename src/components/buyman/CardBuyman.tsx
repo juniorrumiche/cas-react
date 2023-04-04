@@ -1,5 +1,6 @@
 // imports
 //
+import TimeAgo from "timeago-react";
 import { memo } from "react";
 import {
   Box,
@@ -123,6 +124,13 @@ export const CardBuyman = memo((props: CardBuymanProps) => {
               icon={<MdEdit />}
             />
           </Flex>
+          <Text align="center" color="gray.500" mt={1} fontSize="sm">
+            <TimeAgo
+              datetime={props.buyman.create_at?.toString() || ""}
+              locale="es_PE"
+            />
+          </Text>
+
           <DeleteDialogBuyman
             {...props.buyman}
             isOpen={isOpenDelete}

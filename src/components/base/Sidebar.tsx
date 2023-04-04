@@ -15,6 +15,7 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import { ReactNode } from "react";
+import { Link as LinkRoute } from "react-router-dom";
 
 import {
   MdDashboard,
@@ -78,12 +79,12 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
           <DrawerBody p={0}>
             <NavItem>
               <MdDashboard size={25} />
-              <Text>Dashborad</Text>
+              <LinkRoute to="/admin/dashboard">Dashborad</LinkRoute>
             </NavItem>
 
             <NavItem>
               <MdPerson size={25} />
-              <Text>Comprador</Text>
+              <LinkRoute to="/admin/buyman">Comprador</LinkRoute>
             </NavItem>
 
             <NavItem>
