@@ -9,7 +9,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { MdPlusOne, MdSearch } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { Base } from "../components/base/Base";
@@ -22,7 +22,6 @@ import { sleep } from "../api/buyman";
 import { refreshing } from "../redux/slices/global/slices";
 import { DialogAddBuyman } from "../components/buyman/DialogAddBuyman";
 import { BuymanProps } from "../types/buyman.t";
-
 export const BuymanPage = () => {
   //staes
   // redux state
@@ -36,25 +35,28 @@ export const BuymanPage = () => {
   const { refresh } = useSelector((state: RootState) => state.refreshSlice);
   const dispatch = useDispatch();
 
-  const filterData = (query: string) => {
-    let filter: Array<BuymanProps> | undefined = state.buyman?.filter((data) =>
-      `${data.name_comprador?.toLowerCase()} ${data.dni_comprador}`.includes(query.toLowerCase())
-    );
+  const filterData = useCallback(
+    (query: string) => {
+      let filter: Array<BuymanProps> | undefined = state.buyman?.filter(
+        (data) =>
+          `${data.name_comprador?.toLowerCase()} ${
+            data.dni_comprador
+          }`.includes(query.toLowerCase())
+      );
 
-    setDataFilter(filter);
-  };
+      setDataFilter(filter);
+    },
+    [state.buyman]
+  );
 
   //useeffetc
   useEffect(() => {
     const timeout = setTimeout(async () => {
-      console.log("refreshing");
       try {
         let response = await axios.get("/api/buyman");
         dispatch(setBuymans(response.data));
         setDataFilter(response.data);
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (error) {}
     }, 100);
 
     return () => clearTimeout(timeout);

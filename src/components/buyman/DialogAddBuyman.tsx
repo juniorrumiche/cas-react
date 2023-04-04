@@ -25,16 +25,15 @@ import { useDispatch } from "react-redux";
 import { getNameByDNI, sleep } from "../../api/buyman";
 import { refreshing } from "../../redux/slices/global/slices";
 import { BuymanProps } from "../../types/buyman.t";
-
+import { memo } from "react";
 import { BaseDialogProps } from "../../types/componets.t";
 
-export const DialogAddBuyman = ({ onClose, isOpen }: BaseDialogProps) => {
+export const DialogAddBuyman = memo(({ onClose, isOpen }: BaseDialogProps) => {
   //states
   const [formData, setFormData] = useState<BuymanProps>({});
   const [loading, setloading] = useState(false);
   const toast = useToast();
   const dispatch = useDispatch();
-
   //refs
   const initialRef = useRef(null);
   const finalRef = useRef(null);
@@ -46,7 +45,7 @@ export const DialogAddBuyman = ({ onClose, isOpen }: BaseDialogProps) => {
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     let target = e.target;
-    console.log(formData)
+    // console.log(formData)
 
     // change the value when the ID is complete
     if (target.name == "dni_comprador") {
@@ -280,4 +279,4 @@ export const DialogAddBuyman = ({ onClose, isOpen }: BaseDialogProps) => {
       </Modal>
     </>
   );
-};
+});

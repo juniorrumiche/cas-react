@@ -113,7 +113,7 @@ export const EditDialogBuyman = ({
           bg={useColorModeValue("white", "gray.900")}
           color={useColorModeValue("gray.500", "whiteAlpha.800")}
         >
-          <ModalHeader>Agregar Comprador </ModalHeader>
+          <ModalHeader>Editar Comprador </ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <FormControl mt={4} isRequired>
