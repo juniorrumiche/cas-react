@@ -126,6 +126,7 @@ export const CardBuyman = memo((props: CardBuymanProps) => {
           </Flex>
           <Text align="center" color="gray.500" mt={1} fontSize="sm">
             <TimeAgo
+              opts={{ minInterval: 60 }}
               datetime={props.buyman.create_at?.toString() || ""}
               locale="es_PE"
             />
